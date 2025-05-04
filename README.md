@@ -20,26 +20,60 @@ It is designed to be simple and easy to use, with a command line interface that 
 ### Prerequisites
 
 - Java 21
-- Docker
+- Docker (You can install Docker with the help of [run-simple-cache-app.sh][run-simple-cache-app.sh] script automatically)
 
-### Build the Docker Image
+### Running the App
 
-To build the Docker image, run the following command in the root directory of the project:
+1. Clone the repository from [SimpleCacheApp GitHub Repo][simple-cache-app-repo-url] or with the command below:
+
+   ```bash
+   git clone git@github.com:evrentan/simple-cache-app.git
+    ```
+   
+2. Change to the directory:
+
+   ```bash
+   cd simple-cache-app
+   ```
+   
+3. Give execution permission to the script:
+
+   ```bash
+   chmod +x run-simple-cache-app.sh
+   ```
+   
+4. Run the script:
+
+   ```bash
+    ./run-simple-cache-app.sh
+    ```
+
+5. Follow the instructions in the command line interface to interact with the cache.
+
+## Script Help
+
+The script `run-simple-cache-app.sh` is a simple script that runs the Simple Cache App in a Docker container. It builds the Docker image and runs the container, allowing you to interact with the app from the command line.
+
+You can check the help of the script with the command below:
 
 ```bash
-docker build -t simple-cache-app .;
+./run-simple-cache-app.sh --help
 ```
 
-### Run the Docker Container
+Script has the following arguments:
 
-To run the Docker container, use the following command:
-
-```bash
-docker run --name simple-cache-app -it --rm simple-cache-app;
-```
+- `--help`: Show help message and exit.
+- `--build`: Force to rebuild the Docker image.
+- `--ttl <ms>`: Set the time-to-live (TTL) for the cache in milliseconds. The default is 60000 ms (60 seconds).
+- `--nogc`: Disable System.gc() to prevent explicit garbage collection within the default/specified TTL.
+- `--nodebug`: Disable debug mode. By default, debug mode is enabled.
 
 ## How to Contribute
 
 For the contributor covenant to this project, please check the Code of Conduct file.
 
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
+
+
+[run-simple-cache-app.sh]: run-simple-cache-app.sh
+[simple-cache-app-repo-url]: https://github.com/evrentan/simple-cache-app

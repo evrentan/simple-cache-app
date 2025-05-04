@@ -12,31 +12,54 @@ public class SimpleCacheApp {
     public static void main(String... args) {
         System.out.println("This is a simple cache application that demonstrates the use of WeakHashMap developed by Evren Tan!");
 
-        final int cacheTTL = args.length > 0 ? Integer.parseInt(args[0]) : DEFAULT_CACHE_TTL;
+        int cacheTTL = DEFAULT_CACHE_TTL;
+        boolean debug = true;
+        boolean skipGC = false;
 
-        System.out.println("Cache TTL is set to " + cacheTTL + " milliseconds!");
-
-        SimpleCacheApp app = new SimpleCacheApp();
-
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(() -> {
-            System.out.println();
-            System.out.println("[Eviction] Cache TTL expired. Current cache size: " + cache.size());
-            System.out.println("[Eviction] Cache TTL expired. Clearing strong references and invoking GC...");
-            keyReferences.clear();
-            System.gc();
-            try {
-                Thread.sleep(DEFAULT_GC_INTERVAL);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+        for (int i = 0; i < args.length; i++) {
+            switch (args[i]) {
+                case "--ttl":
+                    if (i + 1 < args.length) {
+                        cacheTTL = Integer.parseInt(args[++i]);
+                    }
+                    break;
+                case "--nodebug":
+                    debug = false;
+                    break;
+                case "--nogc":
+                    skipGC = true;
+                    break;
+                default:
+                    System.out.println("Unknown argument: " + args[i]);
             }
-            System.out.println("[Eviction] Post-GC cache size: " + cache.size());
-        }, cacheTTL, cacheTTL, TimeUnit.MILLISECONDS);
+        }
+
+        if (debug) {
+            SimpleCacheAppUtils.printDebugInfo(debug, cacheTTL, skipGC);
+        }
+
+        ScheduledExecutorService scheduler = null;
+        if (!skipGC) {
+            scheduler = Executors.newScheduledThreadPool(1);
+            scheduler.scheduleAtFixedRate(() -> {
+                System.out.println();
+                System.out.println("[Eviction] Cache TTL expired. Current cache size: " + cache.size());
+                System.out.println("[Eviction] Cache TTL expired. Clearing strong references and invoking GC...");
+                keyReferences.clear();
+                System.gc();
+                try {
+                    Thread.sleep(DEFAULT_GC_INTERVAL);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                System.out.println("[Eviction] Post-GC cache size: " + cache.size());
+            }, cacheTTL, cacheTTL, TimeUnit.MILLISECONDS);
+        }
 
         System.out.println("Starting SimpleCacheApp...");
 
         while (true) {
-            app.printActions();
+            SimpleCacheAppUtils.printActions();
             Scanner scanner = new Scanner(System.in);
 
             int action = scanner.nextInt();
@@ -68,10 +91,10 @@ public class SimpleCacheApp {
                     System.out.println("Key removed from cache.");
                     break;
                 case 4:
-                    app.printCache();
+                    SimpleCacheAppUtils.printCache(cache);
                     break;
                 case 5:
-                    System.out.println("Cache size: " + cache.size());
+                    SimpleCacheAppUtils.printCacheSize(cache);
                     break;
                 case 6:
                     cache.clear();
@@ -80,32 +103,15 @@ public class SimpleCacheApp {
                 case 7:
                     System.out.println("Exiting SimpleCacheApp...");
                     scanner.close();
-                    scheduler.shutdownNow();
+                    if (scheduler != null) {
+                        scheduler.shutdown();
+                    }
                     System.exit(0);
                     return;
                 default:
                     System.out.println("Invalid action. Please select a valid action.");
                     break;
             }
-        }
-    }
-
-    private void printActions() {
-        System.out.println("Possible actions:");
-        System.out.println("1. Add an item to the cache");
-        System.out.println("2. Retrieve an item from the cache");
-        System.out.println("3. Remove an item from the cache");
-        System.out.println("4. Print cache contents");
-        System.out.println("5. Print cache size");
-        System.out.println("6. Clear the cache");
-        System.out.println("7. Exit");
-        System.out.print("Please select an action (1-7): ");
-    }
-
-    private void printCache() {
-        System.out.println("Current cache contents:");
-        for (Map.Entry<KeyObject, String> entry : cache.entrySet()) {
-            System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
         }
     }
 }
