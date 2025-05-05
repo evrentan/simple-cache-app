@@ -50,6 +50,12 @@ It is designed to be simple and easy to use, with a command line interface that 
 
 5. Follow the instructions in the command line interface to interact with the cache.
 
+Or you can run the app directly from my [simple-cache-app Docker Hub][simple-cache-app-docker-hub-url] repository in my [Docker Hub][evren-docker-hub-url] with the command below:
+
+```bash
+docker run -it --rm evrentan/simple-cache-app:latest
+```
+
 ## Script Help
 
 The script `run-simple-cache-app.sh` is a simple script that runs the Simple Cache App in a Docker container. It builds the Docker image and runs the container, allowing you to interact with the app from the command line.
@@ -77,3 +83,5 @@ For the contributor covenant to this project, please check the Code of Conduct f
 
 [run-simple-cache-app.sh]: run-simple-cache-app.sh
 [simple-cache-app-repo-url]: https://github.com/evrentan/simple-cache-app
+[simple-cache-app-docker-hub-url]: https://hub.docker.com/r/evrentan/simple-cache-app
+[evren-docker-hub-url]: https://hub.docker.com/u/evrentan
